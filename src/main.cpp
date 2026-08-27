@@ -1,4 +1,6 @@
 #include "main.h"
+#include "api.h"
+#include "lemlib/api.hpp"
 
 /**
  * A callback function for LLEMU's center button.
