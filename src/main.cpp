@@ -4,13 +4,6 @@
 #include "shibuya_sky_bg.c"
 #include "liblvgl/display/lv_display.h"
 #include "liblvgl/widgets/image/lv_image.h"
-
-
-
-
-
-
-
 /*working on displaying image on vex v5
 
 
