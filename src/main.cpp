@@ -10,9 +10,10 @@
 
 
 
+
 /*working on displaying image on vex v5
 
-*/
+
 
 
 void display_img_from_c_array() {
@@ -28,11 +29,12 @@ void display_image_from_file(const void * src) {
 
 }
 
-void intialize() {
+void initialize() {
 	display_img_from_c_array();
 
 }
 
+*/
 
 /**
  *
@@ -110,8 +112,8 @@ void autonomous() {}
  */
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::MotorGroup left_mg({1, -2, 3});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
-	pros::MotorGroup right_mg({-4, 5, -6});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
+	pros::MotorGroup left_mg({13, 3});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
+	pros::MotorGroup right_mg({10, 20});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
 
 
 	while (true) {
