@@ -1,7 +1,6 @@
 #include "main.h"
 #include "api.h"
-#include "lemlib/api.hpp"
-#include "shibuya_sky_bg.c"
+#include "lemlib/api.hpp" 	
 #include "liblvgl/display/lv_display.h"
 #include "liblvgl/widgets/image/lv_image.h"
 /*working on displaying image on vex v5
