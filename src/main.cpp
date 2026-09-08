@@ -1,8 +1,41 @@
 #include "main.h"
 #include "api.h"
 #include "lemlib/api.hpp"
+#include "shibuya_sky_bg.c"
+#include "liblvgl/display/lv_display.h"
+#include "liblvgl/widgets/image/lv_image.h"
+
+
+
+
+
+
+/*working on displaying image on vex v5
+
+*/
+
+
+void display_img_from_c_array() {
+
+	LV_IMAGE_DECLARE(shibuya_sky_bg);
+
+	lv_obj_t* img = lv_image_create(lv_screen_active());
+
+	lv_image_set_src(img, &shibuya_sky_bg);
+}
+
+void display_image_from_file(const void * src) {
+
+}
+
+void intialize() {
+	display_img_from_c_array();
+
+}
+
 
 /**
+ *
  * A callback function for LLEMU's center button.
  *
  * When this callback is fired, it will toggle line 2 of the LCD text between
