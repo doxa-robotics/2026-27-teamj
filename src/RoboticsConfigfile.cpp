@@ -2,7 +2,7 @@
 #include "lemlib/api.hpp"
 
 // left motor group
-pros::MotorGroup left_motor_group({3 ,13}, pros::MotorGears::blue);
+pros::MotorGroup left_motor_group({3 ,13}, pros::MotorGears::green);
 // right motor group
 pros::MotorGroup right_motor_group({10, 20}, pros::MotorGears::green);
 
@@ -11,7 +11,7 @@ lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
                               &right_motor_group, // right motor group
                               10, // 10 inch track width
                               lemlib::Omniwheel::NEW_4, // using new 4" omnis
-                              360, // drivetrain rpm is 360
+                              200, // drivetrain rpm is 360
                               2 // horizontal drift is 2 (for now)
 );
 
@@ -43,7 +43,7 @@ lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
                                               100, // small error range timeout, in milliseconds
                                               3, // large error range, in inches
                                               500, // large error range timeout, in milliseconds
-                                              20 // maximum acceleration (slew)
+                                              60 // maximum acceleration (slew)
 );
 
 // angular PID controller
