@@ -124,4 +124,42 @@ void opcontrol() {
 		right_mg.move(dir + turn);                     // Sets right motor voltage
 		pros::delay(20);                               // Run for 20 ms then update
 	}
-}
+
+
+	pros::Motor lift(5, pros::MotorGears::blue);
+
+	constexpr double LIFT_MIN = 0;
+	constexpr double LIFT_MAX = 900;
+
+	void initialize() {
+		
+		lift.set_encoder_units(pros::MotorEncoderUnits::degrees);
+		lift.set_brake_mode(pros::MotorBrakeMode::hold);
+		lift.tare_position();
+
+	}
+
+	void opcontrol() {
+		pros::Controller master(pros::E_CONTROLLER_MASTER);
+
+		while (true) {
+			double pos = lift.get_position();
+			bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
+			bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN); 
+
+			if (up_pressed && pos < LIFT_MAX) {
+				lift.move(120);  // Move lift up at full speed
+			} else if (down_pressed && pos > LIFT_MIN) {
+				lift.move(-120);  // Move lift down at full speed
+			} else {
+				lift.move(0);  // Stop the lift or i can just use brake();
+			}
+
+			pros::delay(20);  // Delay to prevent wasted resources
+
+			
+		}
+	}
+
+
+}	
