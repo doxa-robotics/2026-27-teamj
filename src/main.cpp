@@ -109,7 +109,7 @@ void autonomous() {}
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 	pros::MotorGroup left_mg({13, 3});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
-	pros::MotorGroup right_mg({10, 20});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
+	pros::MotorGroup right_mg({10, 4});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
 
 
 	while (true) {
@@ -130,25 +130,34 @@ void opcontrol() {
 
 
 
-pros::Motor lift(5, pros::MotorGears::blue);
-//pros::Motor lift(5, pros::MotorGears::blue, pros::MotorUnits::degrees);
+pros::Motor lift(20, pros::MotorGears::blue);
+pros::Motor lift_right(11, pros::MotorGears::blue);
+
+pros::MotorGroup lift_mg({20, 11}, pros::MotorGears::blue);
+
 constexpr double LIFT_MIN = 0;
 constexpr double LIFT_MAX = 900;
-
 void initialize() {
 	// Initialize the lift motor
 	lift.set_encoder_units(pros::MotorEncoderUnits::degrees);
 	lift.set_brake_mode(pros::MotorBrake::hold);
 	lift.tare_position();
+	lift_right.set_brake_mode(pros::MotorBrake::hold);
+	lift_right.tare_position();
 	}
 
-	//:)
+	
 
 
 
 void opcontrol() {
 	// Create a controller object
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
+	pros::Motor lift(20, pros::MotorGears::blue);
+	pros::Motor lift_right(11, pros::MotorGears::blue);
+
+	pros::MotorGroup lift_mg({20, 11}, pros::MotorGears::blue);
+
 
 		while (true) {
 		double pos = lift.get_position();
@@ -156,11 +165,11 @@ void opcontrol() {
 		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN); 
 
 		if (up_pressed && pos < LIFT_MAX) {
-			lift.move(120);  // Move lift up at full speed
+			lift_mg.move(120);  // Move lift up at full speed
 		} else if (down_pressed && pos > LIFT_MIN) {
-			lift.move(-120);  // Move lift down at full speed
+			lift_mg.move(-120);  // Move lift down at full speed				
 		} else {
-			lift.move(0);  // Stop the lift or i can just use brake();
+			lift_mg.move(0);  // Stop the lift or i can just use brake();
 		}
 
 		pros::delay(20);  // Delay to prevent wasted resources
