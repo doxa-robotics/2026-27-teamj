@@ -1,16 +1,20 @@
 #include "main.h"
 #include "lemlib/api.hpp"
 
-// left motor group
-pros::MotorGroup left_motor_group({3, 13}, pros::MotorGears::blue);
-// right motor group
-pros::MotorGroup right_motor_group({10, 20}, pros::MotorGears::blue);
+pros::Controller master(pros::E_CONTROLLER_MASTER);
+	pros::MotorGroup left_mg({13, 3});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
+	pros::MotorGroup right_mg({10, 4});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
+	
+	pros::Motor lift(20, pros::MotorGears::blue);
+	pros::Motor lift_right(11, pros::MotorGears::blue);
+	pros::MotorGroup lift_mg({20, 11}, pros::MotorGears::blue);
 
 // drivetrain settings
-lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
-                              &right_motor_group, // right motor group
+lemlib::Drivetrain drivetrain(&left_mg, // left motor group
+                              &right_mg, // right motor group
                               10, // 10 inch track width
-                              lemlib::Omniwheel::NEW_4, // using new 4" omnis
+                              lemlib::Omniwheel::NEW_4, // using new 4" omnis             
+                                // TODO: update track width, diameter, and rpm. 
                               360, // drivetrain rpm is 360
                               2 // horizontal drift is 2 (for now)
 );  
