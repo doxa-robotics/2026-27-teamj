@@ -1,8 +1,7 @@
 #include "main.h"
 #include "api.h"
 #include "lemlib/api.hpp" 	
-#include "liblvgl/display/lv_display.h"
-#include "liblvgl/widgets/image/lv_image.h"
+#include "config.hpp"
 /*working on displaying image on vex v5
 
 
@@ -20,9 +19,6 @@ void display_img_from_c_array() {
 void display_image_from_file(const void * src) {
 
 }
-
-void initialize() {
-	display_img_from_c_array();
 
 }
 
@@ -45,22 +41,10 @@ void on_center_button() {
 	}
 }
 
-/**
- * Runs initialization code. This occurs as soon as the program is started.
- *
- * All other competition modes are blocked by initialize; it is recommended
- * to keep execution time for this mode under a few seconds.
- */
+ 
+ 
 
- /*
-void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
 
-	pros::lcd::register_btn1_cb(on_center_button);
-}
-
-*/
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
@@ -105,26 +89,14 @@ void autonomous() {}
  * If the robot is disabled or communications is lost, the
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
+ *
  */
 void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::MotorGroup left_mg({13, 3});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
-	pros::MotorGroup right_mg({10, 4});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
 	
-	pros::Motor lift(20, pros::MotorGears::blue);
-	pros::Motor lift_right(11, pros::MotorGears::blue);
-	pros::MotorGroup lift_mg({20, 11}, pros::MotorGears::blue);
 	constexpr double LIFT_MIN = 0;
 	constexpr double LIFT_MAX = 900;
 	
-	while (true) {
-		// Initialize the lift motor
-		lift.set_encoder_units(pros::MotorEncoderUnits::degrees);
-		lift.set_brake_mode(pros::MotorBrake::hold);
-		lift.tare_position();
-		lift_right.set_brake_mode(pros::MotorBrake::hold);
-		lift_right.tare_position();
-		}
+	
 
 
 	while (true) {
@@ -160,14 +132,6 @@ void opcontrol() {
 
 
 		}
-
-
-	
-
-
-
-
-
 
 		while (true) {
 		double pos = lift.get_position();

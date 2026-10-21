@@ -9,6 +9,9 @@ pros::Controller master(pros::E_CONTROLLER_MASTER);
 	pros::Motor lift_right(11, pros::MotorGears::blue);
 	pros::MotorGroup lift_mg({20, 11}, pros::MotorGears::blue);
 
+    
+	
+
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_mg, // left motor group
                               &right_mg, // right motor group
@@ -74,6 +77,14 @@ void initialize() {
     pros::lcd::initialize(); // initialize brain screen
     chassis.calibrate(); // calibrate sensors
     // print position to brain screen
+    // Initialize the lift motor
+		lift.set_encoder_units(pros::MotorEncoderUnits::degrees);
+		lift.set_brake_mode(pros::MotorBrake::hold);
+		lift.tare_position();
+		lift_right.set_brake_mode(pros::MotorBrake::hold);
+		lift_right.tare_position();
+	
+
     pros::Task screen_task([&]() {
         while (true) {
             // print robot location to the brain screen
@@ -85,3 +96,4 @@ void initialize() {
         }
     });
 }
+
