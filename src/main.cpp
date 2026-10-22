@@ -97,9 +97,9 @@ void opcontrol() {
 	constexpr double LIFT_MAX = 900;
 	
 	
-
-
 	while (true) {
+
+	
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);  // Prints status of the emulated screen LCDs
@@ -110,11 +110,10 @@ void opcontrol() {
 		left_mg.move(dir - turn);                      // Sets left motor voltage
 		right_mg.move(dir + turn);                     // Sets right motor voltage
 		pros::delay(20);                               // Run for 20 ms then update
-	}
+	
 
 	
 
-	while (true) {
 		double pos = lift.get_position();
 		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
 		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN); 
@@ -122,33 +121,16 @@ void opcontrol() {
 		if (up_pressed && pos < LIFT_MAX) {
 			lift_mg.move(120);  // Move lift up at full speed
 		} else if (down_pressed && pos > LIFT_MIN) {
-			lift_mg.move(-120);  // Move lift down at full speed				
+			lift_mg.move(-60);  // Move lift down at full speed				
 		} else {
 			lift_mg.move(0);  // Stop the lift or i can just use brake();
 		}
 
-		pros::delay(20);  // Delay to prevent wasted resources
-
-
-
-		}
-
-		while (true) {
-		double pos = lift.get_position();
-		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
-		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN); 
-
-		if (up_pressed && pos < LIFT_MAX) {
-			lift_mg.move(120);  // Move lift up at full speed
-		} else if (down_pressed && pos > LIFT_MIN) {
-			lift_mg.move(-120);  // Move lift down at full speed				
-		} else {
-			lift_mg.move(0);  // Stop the lift or i can just use brake();
-		}
 
 		pros::delay(20);  // Delay to prevent wasted resources
 
-			
+		
+	
 	}
 }
 
