@@ -2,9 +2,9 @@
 #include "api.h"
 #include "lemlib/api.hpp" 	
 #include "config.hpp"
+
+
 /*working on displaying image on vex v5
-
-
 
 
 void display_img_from_c_array() {

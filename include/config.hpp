@@ -1,4 +1,12 @@
 #pragma once
+#include "pros/adi.hpp"
+#include "pros/motors.hpp"
+# include "pros/imu.hpp"
+#include "pros/rotation.hpp"
+#include "pros/motor_group.hpp"
+#include "pros/imu.hpp"
+#include "pros/adi.hpp"
+
 
 
 extern pros::Motor lift;
