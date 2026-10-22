@@ -121,7 +121,7 @@ void opcontrol() {
 		if (up_pressed && pos < LIFT_MAX) {
 			lift_mg.move(120);  // Move lift up at full speed
 		} else if (down_pressed && pos > LIFT_MIN) {
-			lift_mg.move(-60);  // Move lift down at full speed				
+			lift_mg.move(-120);  // Move lift down at full speed				
 		} else {
 			lift_mg.move(0);  // Stop the lift or i can just use brake();
 		}
