@@ -108,9 +108,7 @@ void opcontrol() {
 		int dir = master.get_analog(ANALOG_LEFT_Y);    // Gets amount forward/backward from left joystick
 		int turn = master.get_analog(ANALOG_RIGHT_X);  // Gets the turn left/right from right joystick
 		left_mg.move(dir - turn);                      // Sets left motor voltage
-		right_mg.move(dir + turn);                     // Sets right motor voltage
-		pros::delay(20);                               // Run for 20 ms then update
-	
+		right_mg.move(dir + turn);                     // Sets right motor voltage	
 
 	
 
@@ -119,9 +117,9 @@ void opcontrol() {
 		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN); 
 
 		if (up_pressed && pos < LIFT_MAX) {
-			lift_mg.move(120);  // Move lift up at full speed
+			lift_mg.move(100);  // Move lift up at full speed
 		} else if (down_pressed && pos > LIFT_MIN) {
-			lift_mg.move(-120);  // Move lift down at full speed				
+			lift_mg.move(-100);  // Move lift down at full speed				
 		} else {
 			lift_mg.move(0);  // Stop the lift or i can just use brake();
 		}
