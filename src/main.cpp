@@ -1,8 +1,10 @@
 #include "main.h"
 #include "api.h"
-#include "lemlib/api.hpp" 	
+#include "lemlib/api.hpp"
 #include "config.hpp"
 
+constexpr double LIFT_MIN = 0;
+constexpr double LIFT_MAX = 2000;
 
 /*working on displaying image on vex v5
 
@@ -31,20 +33,19 @@ void display_image_from_file(const void * src) {
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
-void on_center_button() {
+void on_center_button()
+{
 	static bool pressed = false;
 	pressed = !pressed;
-	if (pressed) {
+	if (pressed)
+	{
 		pros::lcd::set_text(2, "I was pressed!");
-	} else {
+	}
+	else
+	{
 		pros::lcd::clear_line(2);
 	}
 }
-
- 
- 
-
-
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
@@ -91,45 +92,40 @@ void autonomous() {}
  * task, not resume it from where it left off.
  *
  */
-void opcontrol() {
-	
-	constexpr double LIFT_MIN = 0;
-	constexpr double LIFT_MAX = 900;
-	
-	
-	while (true) {
+void opcontrol()
+{
 
-	
+	while (true)
+	{
+
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);  // Prints status of the emulated screen LCDs
+						 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
+						 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0); // Prints status of the emulated screen LCDs
 
 		// Arcade control scheme
-		int dir = master.get_analog(ANALOG_LEFT_Y);    // Gets amount forward/backward from left joystick
-		int turn = master.get_analog(ANALOG_RIGHT_X);  // Gets the turn left/right from right joystick
-		left_mg.move(dir - turn);                      // Sets left motor voltage
-		right_mg.move(dir + turn);                     // Sets right motor voltage	
+		int dir = master.get_analog(ANALOG_LEFT_Y);	  // Gets amount forward/backward from left joystick
+		int turn = master.get_analog(ANALOG_RIGHT_X); // Gets the turn left/right from right joystick
+		left_mg.move(dir - turn);					  // Sets left motor voltage
+		right_mg.move(dir + turn);					  // Sets right motor voltage
 
-	
-
+		pros::lcd::print(3, "Lift Position: %f", lift.get_position()); // Prints the lift position to the brain screen
 		double pos = lift.get_position();
 		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
-		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN); 
+		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN);
 
-		if (up_pressed && pos < LIFT_MAX) {
-			lift_mg.move(100);  // Move lift up at full speed
-		} else if (down_pressed && pos > LIFT_MIN) {
-			lift_mg.move(-100);  // Move lift down at full speed				
-		} else {
-			lift_mg.move(0);  // Stop the lift or i can just use brake();
+		if (up_pressed && pos < LIFT_MAX)
+		{
+			lift_mg.move(100); // Move lift up at full speed
+		}
+		else if (down_pressed && pos > LIFT_MIN)
+		{
+			lift_mg.move(-100); // Move lift down at full speed
+		}
+		else
+		{
+			lift_mg.brake(); // Stop lift movement
 		}
 
-
-		pros::delay(20);  // Delay to prevent wasted resources
-
-		
-	
+		pros::delay(20); // Delay to prevent wasted resources
 	}
 }
-
-
