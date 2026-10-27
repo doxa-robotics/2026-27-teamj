@@ -4,7 +4,7 @@
 #include "config.hpp"
 
 constexpr double LIFT_MIN = 0;
-constexpr double LIFT_MAX = 2000;
+constexpr double LIFT_MAX = 1000;
 
 /*working on displaying image on vex v5
 
@@ -111,8 +111,7 @@ void opcontrol()
 		pros::lcd::print(3, "Lift Position: %f", lift.get_position()); // Prints the lift position to the brain screen
 		double pos = lift.get_position();
 		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
-		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN);
-
+		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_A);
 		if (up_pressed && pos < LIFT_MAX)
 		{
 			lift_mg.move(100); // Move lift up at full speed

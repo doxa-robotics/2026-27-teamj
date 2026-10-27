@@ -2,8 +2,8 @@
 #include "lemlib/api.hpp"
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
-pros::MotorGroup left_mg({-13, -3}); // Creates a motor group with forwards ports 1 & 3 and reversed port 2
-pros::MotorGroup right_mg({10, 4});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
+pros::MotorGroup left_mg({13, 3});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
+pros::MotorGroup right_mg({-10, -8}); // Creates a motor group with forwards port 5 and reversed ports 4 & 6
 
 pros::Motor lift(-19, pros::MotorGears::red);
 pros::Motor lift_right(11, pros::MotorGears::red);
