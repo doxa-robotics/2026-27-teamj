@@ -3,8 +3,11 @@
 #include "lemlib/api.hpp"
 #include "config.hpp"
 
-constexpr double LIFT_MIN = 0;
-constexpr double LIFT_MAX = 1000;
+/* !!!!
+ */
+
+constexpr double LIFT_MIN = 5;
+constexpr double LIFT_MAX = 1500;
 
 /*working on displaying image on vex v5
 
@@ -108,23 +111,31 @@ void opcontrol()
 		left_mg.move(dir - turn);					  // Sets left motor voltage
 		right_mg.move(dir + turn);					  // Sets right motor voltage
 
-		pros::lcd::print(3, "Lift Position: %f", lift.get_position()); // Prints the lift position to the brain screen
 		double pos = lift.get_position();
-		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
-		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_A);
+		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
+		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
+
+		const char *action = "brake";
 		if (up_pressed && pos < LIFT_MAX)
 		{
-			lift_mg.move(100); // Move lift up at full speed
+			lift_mg.move(100);
 		}
 		else if (down_pressed && pos > LIFT_MIN)
 		{
-			lift_mg.move(-100); // Move lift down at full speed
+			lift_mg.move(-100);
 		}
 		else
 		{
-			lift_mg.brake(); // Stop lift movement
+			lift_mg.move(0);
+			lift_mg.brake();
 		}
 
+		static bool clamp_state = false;
+		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2))
+		{
+			clamp_state = !clamp_state;
+			clamp.set_value(clamp_state);
+		}
 		pros::delay(20); // Delay to prevent wasted resources
 	}
 }

@@ -2,12 +2,14 @@
 #include "lemlib/api.hpp"
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
-pros::MotorGroup left_mg({13, 3});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
-pros::MotorGroup right_mg({-10, -8}); // Creates a motor group with forwards port 5 and reversed ports 4 & 6
+pros::MotorGroup left_mg({8, 3});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
+pros::MotorGroup right_mg({-5, -7}); // Creates a motor group with forwards port 5 and reversed ports 4 & 6
 
 pros::Motor lift(-19, pros::MotorGears::red);
 pros::Motor lift_right(11, pros::MotorGears::red);
 pros::MotorGroup lift_mg({-19, 11}, pros::MotorGears::red);
+
+pros::adi::DigitalOut clamp('B');
 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_mg,                 // left motor group
@@ -72,19 +74,24 @@ lemlib::Chassis chassis(drivetrain,         // drivetrain settings
 // initialize function. Runs on program startup
 void initialize()
 {
-  pros::lcd::initialize(); // initialize brain screen
-  // TODO: RE-ENABLE CHASSIS CALIBRATION WHEN WE PUT SENSOR
-  // chassis.calibrate(); // calibrate sensors
-  // print position to brain screen
-  // Initialize the lift motor
-  lift.set_encoder_units(pros::MotorEncoderUnits::degrees);
-  lift.set_brake_mode(pros::MotorBrake::coast);
-  lift.tare_position();
-  lift_right.set_brake_mode(pros::MotorBrake::coast);
-  lift_right.tare_position();
+    pros::lcd::initialize(); // initialize brain screen
 
-  pros::Task screen_task([&]()
-                         {
+    clamp.set_value(false);
+
+    // TODO: RE-ENABLE CHASSIS CALIBRATION WHEN WE PUT SENSOR
+    // chassis.calibrate(); // calibrate sensors
+    // print position to brain screen
+    // Initialize the lift motor
+    lift.set_encoder_units(pros::MotorEncoderUnits::degrees);
+    lift.set_brake_mode(pros::MotorBrake::hold);
+    lift.tare_position();
+    lift_right.set_brake_mode(pros::MotorBrake::hold);
+    lift_right.tare_position();
+    lift_mg.set_brake_mode(pros::MotorBrake::hold);
+    lift_mg.tare_position();
+
+    pros::Task screen_task([&]()
+                           {
         while (true) {
             // print robot location to the brain screen
             pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
