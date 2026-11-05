@@ -79,8 +79,11 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
-
+void autonomous()
+{
+	chassis.setPose(0, 0, 0);
+	chassis.moveToPoint(0, 24, 4000);
+}
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -106,10 +109,33 @@ void opcontrol()
 						 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0); // Prints status of the emulated screen LCDs
 
 		// Arcade control scheme
-		int dir = master.get_analog(ANALOG_LEFT_Y);	  // Gets amount forward/backward from left joystick
-		int turn = master.get_analog(ANALOG_RIGHT_X); // Gets the turn left/right from right joystick
-		left_mg.move(dir - turn);					  // Sets left motor voltage
-		right_mg.move(dir + turn);					  // Sets right motor voltage
+		int dir = master.get_analog(ANALOG_LEFT_Y);
+		int turn = master.get_analog(ANALOG_RIGHT_X);
+
+		static double target_heading = 0;
+		static bool holding = false;
+
+		if (abs(turn) > 5)
+		{
+			holding = false; // driver is steering
+		}
+		else if (abs(dir) > 5)
+		{
+			if (!holding)
+			{
+				target_heading = imu.get_heading(); // remember where we're pointing
+				headingPID.reset();
+				holding = true;
+			}
+			double error = target_heading - imu.get_heading();
+			while (error > 180)
+				error -= 360; // wrap to -180..180
+			while (error < -180)
+				error += 360;
+			turn = headingPID.update(error);
+		}
+
+		chassis.arcade(dir, turn);
 
 		double pos = lift.get_position();
 		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
