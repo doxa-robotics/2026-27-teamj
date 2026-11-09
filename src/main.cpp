@@ -137,6 +137,8 @@ void opcontrol()
 
 		chassis.arcade(dir, turn);
 
+		pros::lcd::print(4, "Y:%.1f", chassis.getPose().y);
+
 		double pos = lift.get_position();
 		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
 		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
