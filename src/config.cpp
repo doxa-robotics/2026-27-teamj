@@ -11,7 +11,6 @@ pros::MotorGroup lift_mg({2, -1}, pros::MotorGears::red);
 
 pros::adi::DigitalOut clamp('B');
 pros::adi::DigitalOut claw('D');
-
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_mg,                   // left motor group
                               &right_mg,                  // right motor group
@@ -115,7 +114,10 @@ void initialize()
             pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
             pros::lcd::print(1, "Y: %f", chassis.getPose().y); // y
             pros::lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
-            // delay to save resources
-            pros::delay(20);
+            pros::lcd::print(3, "Motors Heat: %f", left_mg.get_temperature()); // left motors heat
+            pros::lcd::print(4, "Motors Heat: %f", right_mg.get_temperature()); //right motors heat
+        
+            pros::delay(20);    // delay to save resources
         } });
 }
+// u r disabled yk every single robot u make its not going to work

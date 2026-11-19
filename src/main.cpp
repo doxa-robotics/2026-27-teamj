@@ -129,13 +129,13 @@ void opcontrol()
 			lift_mg.brake();
 		}
 
-		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2))
+		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X))
 		{
 			claw_state = !claw_state;
 			claw.set_value(claw_state);
 		}
 
-		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2))
+		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
 		{
 			clamp_state = !clamp_state;
 			clamp.set_value(clamp_state);
