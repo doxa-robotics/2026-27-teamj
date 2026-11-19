@@ -2,6 +2,7 @@
 #include "api.h"
 #include "lemlib/api.hpp"
 #include "config.hpp"
+#include <cmath>
 
 /* !!!!
  */
@@ -94,10 +95,36 @@ void competition_initialize() {}
  * task, not resume it from where it left off.
  *
  */
+
+// Moves `current` toward `target`, but by at most one step per call.
+// Uses a gentler step when speeding up and a different one when slowing down or reversing.
+double slew(double target, double current, double accel_step, double decel_step)
+{
+	bool speeding_up = (target * current >= 0) && (std::abs(target) > std::abs(current));
+	double max_step = speeding_up ? accel_step : decel_step;
+
+	double delta = target - current;
+	if (delta > max_step)
+		delta = max_step;
+	else if (delta < -max_step)
+		delta = -max_step;
+
+	return current + delta;
+}
+
+// Tuning values: max change per 20 ms loop, on the -127..127 scale
+constexpr double THROTTLE_ACCEL = 5; // lower = slower, smoother start
+constexpr double THROTTLE_DECEL = 7; // lower = softer braking
+constexpr double TURN_ACCEL = 10;
+constexpr double TURN_DECEL = 14;
+
 void opcontrol()
 {
 	static bool clamp_state = false;
 	static bool claw_state = false;
+
+	static double throttle_out = 0;
+	static double turn_out = 0;
 
 	while (true)
 	{
@@ -106,10 +133,16 @@ void opcontrol()
 						 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 						 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0); // Prints status of the emulated screen LCDs
 
-		// --- Drive control (arcade) ---
-		int throttle = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-		int turn = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-		chassis.arcade(throttle, turn);
+		// --- Drive control (arcade) with slew limiting ---
+		int throttle_in = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		int turn_in = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+
+		throttle_out = slew(throttle_in, throttle_out, THROTTLE_ACCEL, THROTTLE_DECEL);
+		turn_out = slew(turn_in, turn_out, TURN_ACCEL, TURN_DECEL);
+
+		pros::lcd::print(5, "in:%d out:%d conn:%d", throttle_in, (int)throttle_out, master.is_connected());
+
+		chassis.arcade(throttle_out, turn_out);
 
 		double pos = lift.get_position();
 		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L1);

@@ -3,7 +3,7 @@
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 pros::MotorGroup left_mg({-5, -7}, pros::MotorGears::blue); // blue = 600 rpm
-pros::MotorGroup right_mg({95, 3}, pros::MotorGears::blue);
+pros::MotorGroup right_mg({9, 3}, pros::MotorGears::blue);
 
 pros::Motor lift(-1, pros::MotorGears::red);
 pros::Motor lift_right(2, pros::MotorGears::red);
