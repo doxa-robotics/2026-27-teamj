@@ -3,16 +3,14 @@
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 pros::MotorGroup left_mg({-5, -7}, pros::MotorGears::blue); // blue = 600 rpm
-pros::MotorGroup right_mg({8, 3}, pros::MotorGears::blue);
+pros::MotorGroup right_mg({95, 3}, pros::MotorGears::blue);
 
-pros::Motor lift(-19, pros::MotorGears::red);
-pros::Motor lift_right(11, pros::MotorGears::red);
-pros::MotorGroup lift_mg({-19, 11}, pros::MotorGears::red);
-
-lemlib::PID headingPID(2, 0, 10); // for drive-straight
-lemlib::PID liftPID(0.5, 0, 0.3); // only if you use lift PID
+pros::Motor lift(-1, pros::MotorGears::red);
+pros::Motor lift_right(2, pros::MotorGears::red);
+pros::MotorGroup lift_mg({2, -1}, pros::MotorGears::red);
 
 pros::adi::DigitalOut clamp('B');
+pros::adi::DigitalOut claw('D');
 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_mg,                   // left motor group
@@ -26,45 +24,43 @@ lemlib::Drivetrain drivetrain(&left_mg,                   // left motor group
 
 // imu
 pros::Imu imu(17);
-// horizontal tracking wheel encoder
-pros::Rotation horizontal_encoder(20);
-// vertical tracking wheel encoder
-pros::adi::Encoder vertical_encoder('C', 'D', true);
-// horizontal tracking wheel
-lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_275, -5.75);
+
+// rotation sensor
+pros::Rotation rotation_sensor(11); // rotation sensor on port 16, not reversee
+
 // vertical tracking wheel
-lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder, lemlib::Omniwheel::NEW_275, -2.5);
+lemlib::TrackingWheel vertical_tracking_wheel(&rotation_sensor, lemlib::Omniwheel::NEW_2, 1);
 
 // odometry settings
-lemlib::OdomSensors sensors(nullptr, // vertical tracking wheel 1
-                            nullptr, // vertical tracking wheel 2
-                            nullptr, // horizontal tracking wheel 1
-                            nullptr, // horizontal tracking wheel 2
-                            &imu     // inertial sensor
+lemlib::OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel 1
+                            nullptr,                  // vertical tracking wheel 2
+                            nullptr,                  // horizontal tracking wheel 1
+                            nullptr,                  // horizontal tracking wheel 2
+                            &imu                      // inertial sensor
 );
 
 // lateral PID controller
-lemlib::ControllerSettings lateral_controller(10,  // proportional gain (kP)
-                                              0,   // integral gain (kI)
-                                              3,   // derivative gain (kD)
-                                              3,   // anti windup
-                                              1,   // small error range, in inches
-                                              100, // small error range timeout, in milliseconds
-                                              3,   // large error range, in inches
-                                              500, // large error range timeout, in milliseconds
-                                              20   // maximum acceleration (slew)
+lemlib::ControllerSettings lateral_controller(10,   // proportional gain (kP)
+                                              0,    // integral gain (kI)
+                                              23.5, // derivative gain (kD)
+                                              0,    // anti windup
+                                              0,    // small error range, in inches
+                                              0,    // small error range timeout, in milliseconds
+                                              0,    // large error range, in inches
+                                              0,    // large error range timeout, in milliseconds
+                                              2000  // maximum acceleration (slew)
 );
 
 // angular PID controller
-lemlib::ControllerSettings angular_controller(2,   // proportional gain (kP)
-                                              0,   // integral gain (kI)
-                                              10,  // derivative gain (kD)
-                                              3,   // anti windup
-                                              1,   // small error range, in degrees
-                                              100, // small error range timeout, in milliseconds
-                                              3,   // large error range, in degrees
-                                              500, // large error range timeout, in milliseconds
-                                              0    // maximum acceleration (slew)
+lemlib::ControllerSettings angular_controller(0, // proportional gain (kP)
+                                              0, // integral gain (kI)
+                                              0, // derivative gain (kD)
+                                              0, // anti windup
+                                              0, // small error range, in degrees
+                                              0, // small error range timeout, in milliseconds
+                                              0, // large error range, in degrees
+                                              0, // large error range timeout, in milliseconds
+                                              0  // maximum acceleration (slew)
 );
 
 // drive curves
@@ -83,15 +79,22 @@ lemlib::Chassis chassis(drivetrain,         // drivetrain settings
                         &steer_curve        // NEW
 );
 
+void autonomous()
+{
+    chassis.setPose(0, 0, 0);
+    chassis.moveToPoint(0, 30, 9999);
+}
+
 // initialize function. Runs on program startup
 void initialize()
 {
     pros::lcd::initialize(); // initialize brain screen
 
     clamp.set_value(false);
+    claw.set_value(false);
 
-    // TODO: RE-ENABLE CHASSIS CALIBRATION WHEN WE PUT SENSOR
-    chassis.calibrate(); // calibrate sensors
+    // TODO: RE-ENABLE CHASSIS CALIBRATION FOR PID
+    // chassis.calibrate(); // calibrate sensors
     // print position to brain screen
     // Initialize the lift motor
     lift.set_encoder_units(pros::MotorEncoderUnits::degrees);
@@ -101,6 +104,9 @@ void initialize()
     lift_right.tare_position();
     lift_mg.set_brake_mode(pros::MotorBrake::hold);
     lift_mg.tare_position();
+
+    left_mg.set_brake_mode(pros::MotorBrake::coast);
+    right_mg.set_brake_mode(pros::MotorBrake::coast);
 
     pros::Task screen_task([&]()
                            {

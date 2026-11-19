@@ -17,6 +17,7 @@ extern lemlib::Drivetrain drivetrain;
 extern pros::Imu imu;
 extern pros::Rotation horizontal_encoder;
 extern pros::adi::DigitalOut clamp;
+extern pros::adi::DigitalOut claw;
 extern lemlib::Chassis chassis;
 extern lemlib::PID headingPID;
 extern lemlib::PID liftPID;

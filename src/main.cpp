@@ -11,7 +11,7 @@ constexpr double LIFT_MAX = 1500;
 
 /*working on displaying image on vex v5
 
-
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void display_img_from_c_array() {
 
 	LV_IMAGE_DECLARE(shibuya_sky_bg);
@@ -79,11 +79,7 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous()
-{
-	chassis.setPose(0, 0, 0);
-	chassis.moveToPoint(0, 24, 4000);
-}
+
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -100,6 +96,8 @@ void autonomous()
  */
 void opcontrol()
 {
+	static bool clamp_state = false;
+	static bool claw_state = false;
 
 	while (true)
 	{
@@ -108,42 +106,15 @@ void opcontrol()
 						 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 						 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0); // Prints status of the emulated screen LCDs
 
-		// Arcade control scheme
-		int dir = master.get_analog(ANALOG_LEFT_Y);
-		int turn = master.get_analog(ANALOG_RIGHT_X);
-
-		static double target_heading = 0;
-		static bool holding = false;
-
-		if (abs(turn) > 5)
-		{
-			holding = false; // driver is steering
-		}
-		else if (abs(dir) > 5)
-		{
-			if (!holding)
-			{
-				target_heading = imu.get_heading(); // remember where we're pointing
-				headingPID.reset();
-				holding = true;
-			}
-			double error = target_heading - imu.get_heading();
-			while (error > 180)
-				error -= 360; // wrap to -180..180
-			while (error < -180)
-				error += 360;
-			turn = headingPID.update(error);
-		}
-
-		chassis.arcade(dir, turn);
-
-		pros::lcd::print(4, "Y:%.1f", chassis.getPose().y);
+		// --- Drive control (arcade) ---
+		int throttle = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		int turn = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		chassis.arcade(throttle, turn);
 
 		double pos = lift.get_position();
 		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
 		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
 
-		const char *action = "brake";
 		if (up_pressed && pos < LIFT_MAX)
 		{
 			lift_mg.move(100);
@@ -158,7 +129,12 @@ void opcontrol()
 			lift_mg.brake();
 		}
 
-		static bool clamp_state = false;
+		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2))
+		{
+			claw_state = !claw_state;
+			claw.set_value(claw_state);
+		}
+
 		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2))
 		{
 			clamp_state = !clamp_state;
