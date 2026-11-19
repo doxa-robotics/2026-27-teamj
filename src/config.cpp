@@ -1,5 +1,6 @@
 #include "main.h"
 #include "lemlib/api.hpp"
+#include "api.hpp"
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 pros::MotorGroup left_mg({-5, -7}, pros::MotorGears::blue); // blue = 600 rpm
@@ -8,6 +9,8 @@ pros::MotorGroup right_mg({9, 3}, pros::MotorGears::blue);
 pros::Motor lift(-1, pros::MotorGears::red);
 pros::Motor lift_right(2, pros::MotorGears::red);
 pros::MotorGroup lift_mg({2, -1}, pros::MotorGears::red);
+
+pros::Motor intake(4, pros::MotorGears::green); // use -4 if it spins the wrong way
 
 pros::adi::DigitalOut clamp('B');
 pros::adi::DigitalOut claw('D');
@@ -25,7 +28,7 @@ lemlib::Drivetrain drivetrain(&left_mg,                   // left motor group
 pros::Imu imu(17);
 
 // rotation sensor
-pros::Rotation rotation_sensor(11); // rotation sensor on port 16, not reversee
+pros::Rotation rotation_sensor(10); // rotation sensor on port 10, not reversee
 
 // vertical tracking wheel
 lemlib::TrackingWheel vertical_tracking_wheel(&rotation_sensor, lemlib::Omniwheel::NEW_2, 1);
@@ -104,6 +107,8 @@ void initialize()
     lift_mg.set_brake_mode(pros::MotorBrake::hold);
     lift_mg.tare_position();
 
+    intake.set_brake_mode(pros::MotorBrake::brake);
+
     left_mg.set_brake_mode(pros::MotorBrake::coast);
     right_mg.set_brake_mode(pros::MotorBrake::coast);
 
@@ -120,4 +125,4 @@ void initialize()
             pros::delay(20);    // delay to save resources
         } });
 }
-// u r disabled yk every single robot u make its not going to work
+// <3 Jinwoong
