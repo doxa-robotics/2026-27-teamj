@@ -4,7 +4,7 @@
 #include "config.hpp"
 #include <cmath>
 
-/* !!!!
+/* /
  */
 
 constexpr double LIFT_MIN = 5;
@@ -96,22 +96,6 @@ void competition_initialize() {}
  *
  */
 
-// Moves `current` toward `target`, but by at most one step per call.
-// Uses a gentler step when speeding up and a different one when slowing down or reversing.
-double slew(double target, double current, double accel_step, double decel_step)
-{
-	bool speeding_up = (target * current >= 0) && (std::abs(target) > std::abs(current));
-	double max_step = speeding_up ? accel_step : decel_step;
-
-	double delta = target - current;
-	if (delta > max_step)
-		delta = max_step;
-	else if (delta < -max_step)
-		delta = -max_step;
-
-	return current + delta;
-}
-
 // Tuning values: max change per 20 ms loop, on the -127..127 scale
 constexpr double THROTTLE_ACCEL = 5; // lower = slower, smoother start
 constexpr double THROTTLE_DECEL = 7; // lower = softer braking
@@ -120,6 +104,21 @@ constexpr double TURN_DECEL = 14;
 
 void opcontrol()
 {
+	pros::lcd::set_text(7, "build: clean1");
+
+	auto slew = [](double target, double current, double accel_step, double decel_step)
+	{
+		bool speeding_up = (target * current >= 0) && (std::abs(target) > std::abs(current));
+		double max_step = speeding_up ? accel_step : decel_step;
+
+		double delta = target - current;
+		if (delta > max_step)
+			delta = max_step;
+		else if (delta < -max_step)
+			delta = -max_step;
+
+		return current + delta;
+	};
 	static bool clamp_state = false;
 	static bool claw_state = false;
 
