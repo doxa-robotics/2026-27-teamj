@@ -146,7 +146,7 @@ void opcontrol()
 		double pos = lift.get_position();
 		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
 		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
-
+		//--- cascade lift
 		if (up_pressed && pos < LIFT_MAX)
 		{
 			lift_mg.move(100);
@@ -160,7 +160,7 @@ void opcontrol()
 			lift_mg.move(0);
 			lift_mg.brake();
 		}
-
+		//---claw and clamp---
 		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X))
 		{
 			claw_state = !claw_state;
@@ -185,6 +185,16 @@ void opcontrol()
 		else
 		{
 			intake.move(0);
+		}
+
+		//--- Banshee ---
+		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP))
+		{
+			banshee.move_absolute(85, 100); // target position in degrees, max speed in rpm
+		}
+		else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
+		{
+			banshee.move_absolute(-85, 100);
 		}
 
 		pros::delay(20); // Delay to prevent wasted resources

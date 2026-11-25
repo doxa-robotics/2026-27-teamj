@@ -22,3 +22,4 @@ extern lemlib::Chassis chassis;
 extern lemlib::PID headingPID;
 extern lemlib::PID liftPID;
 extern pros::Motor intake;
+extern pros::Motor banshee;

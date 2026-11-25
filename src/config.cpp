@@ -1,6 +1,5 @@
 #include "main.h"
 #include "lemlib/api.hpp"
-#include "api.hpp"
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 pros::MotorGroup left_mg({-5, -7}, pros::MotorGears::blue); // blue = 600 rpm
@@ -10,7 +9,8 @@ pros::Motor lift(-1, pros::MotorGears::red);
 pros::Motor lift_right(2, pros::MotorGears::red);
 pros::MotorGroup lift_mg({2, -1}, pros::MotorGears::red);
 
-pros::Motor intake(4, pros::MotorGears::green); // use -4 if it spins the wrong way
+pros::Motor intake(4, pros::MotorGears::blue);   // use -4 if it spins the wrong way
+pros::Motor banshee(6, pros::MotorGears::green); // use -4 if it spins the wrong way
 
 pros::adi::DigitalOut clamp('B');
 pros::adi::DigitalOut claw('D');
@@ -111,6 +111,10 @@ void initialize()
 
     left_mg.set_brake_mode(pros::MotorBrake::coast);
     right_mg.set_brake_mode(pros::MotorBrake::coast);
+
+    banshee.set_encoder_units(pros::MotorEncoderUnits::degrees);
+    banshee.set_brake_mode(pros::MotorBrake::hold);
+    banshee.tare_position(); // tare the position of the banshee motor
 
     pros::Task screen_task([&]()
                            {
