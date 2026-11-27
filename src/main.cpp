@@ -6,8 +6,8 @@
  */
 
 constexpr double LIFT_MIN = 5;
-constexpr double LIFT_MAX = 1500;
-constexpr double BANSHEE_ANGLE = 100; // degrees from the start position
+constexpr double LIFT_MAX = 3000;
+constexpr double BANSHEE_ANGLE = 380; // degrees from the start position
 
 /*working on displaying image on vex v5
 
@@ -98,15 +98,8 @@ void competition_initialize() {}
 void opcontrol()
 {
 
-	static bool clamp_state = false;
-	static bool claw_state = false;
-
 	while (true)
 	{
-
-		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-						 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-						 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0); // Prints status of the emulated screen LCDs
 
 		// --- Drive control (arcade) ---
 		int throttle = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
@@ -119,11 +112,11 @@ void opcontrol()
 		//--- cascade lift
 		if (up_pressed && pos < LIFT_MAX)
 		{
-			lift_mg.move(100);
+			lift_mg.move(127);
 		}
 		else if (down_pressed && pos > LIFT_MIN)
 		{
-			lift_mg.move(-100);
+			lift_mg.move(-127);
 		}
 		else
 		{
@@ -148,11 +141,11 @@ void opcontrol()
 		// --- Outtake ---
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
 		{
-			outtake.move(127);
+			outtake.move(-127);
 		}
 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
 		{
-			outtake.move(-127);
+			outtake.move(127);
 		}
 		else
 		{
@@ -162,11 +155,11 @@ void opcontrol()
 		//--- Banshee ---
 		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
 		{
-			banshee.move_absolute(BANSHEE_ANGLE, 100); // target position in degrees, max speed in rpm
+			banshee.move_absolute(-BANSHEE_ANGLE, 350); // target position in degrees, max speed in rpm,
 		}
-		else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
+		else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) //
 		{
-			banshee.move_absolute(BANSHEE_ANGLE, -100);
+			banshee.move_absolute(1 / 2 * BANSHEE_ANGLE, 350);
 		}
 
 		pros::delay(20); // Delay to prevent wasted resources
