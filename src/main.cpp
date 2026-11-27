@@ -1,14 +1,13 @@
 #include "main.h"
-#include "api.h"
 #include "lemlib/api.hpp"
 #include "config.hpp"
-#include <cmath>
 
 /* /
  */
 
 constexpr double LIFT_MIN = 5;
 constexpr double LIFT_MAX = 1500;
+constexpr double BANSHEE_ANGLE = 100; // degrees from the start position
 
 /*working on displaying image on vex v5
 
@@ -96,11 +95,8 @@ void competition_initialize() {}
  *
  */
 
-constexpr double BANSHEE_ANGLE = 100; // degrees from the start position
-
 void opcontrol()
 {
-	pros::lcd::set_text(7, "build: clean1");
 
 	static bool clamp_state = false;
 	static bool claw_state = false;
@@ -118,8 +114,8 @@ void opcontrol()
 		chassis.arcade(throttle, turn);
 
 		double pos = lift.get_position();
-		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
-		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
+		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
+		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN);
 		//--- cascade lift
 		if (up_pressed && pos < LIFT_MAX)
 		{
@@ -134,25 +130,13 @@ void opcontrol()
 			lift_mg.move(0);
 			lift_mg.brake();
 		}
-		//---claw and clamp---
-		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X))
-		{
-			claw_state = !claw_state;
-			claw.set_value(claw_state);
-		}
-
-		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
-		{
-			clamp_state = !clamp_state;
-			clamp.set_value(clamp_state);
-		}
 
 		// --- Intake ---
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2))
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1))
 		{
 			intake.move(127);
 		}
-		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
+		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2))
 		{
 			intake.move(-127);
 		}
@@ -162,11 +146,11 @@ void opcontrol()
 		}
 
 		// --- Outtake ---
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B))
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
 		{
 			outtake.move(127);
 		}
-		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_Y))
+		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
 		{
 			outtake.move(-127);
 		}
@@ -176,13 +160,13 @@ void opcontrol()
 		}
 
 		//--- Banshee ---
-		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP))
+		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
 		{
 			banshee.move_absolute(BANSHEE_ANGLE, 100); // target position in degrees, max speed in rpm
 		}
-		else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
+		else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
 		{
-			banshee.move_absolute(-BANSHEE_ANGLE, 100);
+			banshee.move_absolute(BANSHEE_ANGLE, -100);
 		}
 
 		pros::delay(20); // Delay to prevent wasted resources

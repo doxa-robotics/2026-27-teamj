@@ -1,12 +1,8 @@
 #pragma once
-#include "pros/adi.hpp"
-#include "pros/motors.hpp"
-#include "pros/imu.hpp"
-#include "pros/rotation.hpp"
-#include "pros/motor_group.hpp"
-#include "pros/imu.hpp"
-#include "pros/adi.hpp"
+#include "main.h"
+#include "lemlib/api.hpp"
 
+extern pros::Controller master;
 extern pros::Motor lift;
 extern pros::Motor lift_right;
 extern pros::MotorGroup lift_mg;
@@ -16,8 +12,6 @@ extern pros::Controller master;
 extern lemlib::Drivetrain drivetrain;
 extern pros::Imu imu;
 extern pros::Rotation horizontal_encoder;
-extern pros::adi::DigitalOut clamp;
-extern pros::adi::DigitalOut claw;
 extern lemlib::Chassis chassis;
 extern lemlib::PID headingPID;
 extern lemlib::PID liftPID;

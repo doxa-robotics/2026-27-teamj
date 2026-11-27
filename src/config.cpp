@@ -2,19 +2,17 @@
 #include "lemlib/api.hpp"
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
-pros::MotorGroup left_mg({-5, -7}, pros::MotorGears::blue); // blue = 600 rpm
-pros::MotorGroup right_mg({9, 3}, pros::MotorGears::blue);
+pros::MotorGroup right_mg({5, 7}, pros::MotorGears::blue); // blue = 600 rpm
+pros::MotorGroup left_mg({-9, -3}, pros::MotorGears::blue);
 
 pros::Motor lift(-1, pros::MotorGears::red);
 pros::Motor lift_right(2, pros::MotorGears::red);
 pros::MotorGroup lift_mg({2, -1}, pros::MotorGears::red);
 
-pros::Motor intake(6, pros::MotorGears::blue);   // use -6 if it spins the wrong way
-pros::Motor banshee(4, pros::MotorGears::green); // use -4 if it spins the wrong way
-pros::Motor outtake(8, pros::MotorGears::blue);  // use -8 if it spins the wrong way
+pros::Motor intake(6, pros::MotorGears::blue);    // use -6 if it spins the wrong way
+pros::Motor banshee(16, pros::MotorGears::green); // use -4 if it spins the wrong way
+pros::Motor outtake(20, pros::MotorGears::green); // use -8 if it spins the wrong way
 
-pros::adi::DigitalOut clamp('B');
-pros::adi::DigitalOut claw('D');
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_mg,                   // left motor group
                               &right_mg,                  // right motor group
@@ -92,9 +90,6 @@ void autonomous()
 void initialize()
 {
     pros::lcd::initialize(); // initialize brain screen
-
-    clamp.set_value(false);
-    claw.set_value(false);
 
     // TODO: RE-ENABLE CHASSIS CALIBRATION FOR PID
     // chassis.calibrate(); // calibrate sensors
