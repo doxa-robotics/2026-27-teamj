@@ -98,6 +98,8 @@ void competition_initialize() {}
 void opcontrol()
 {
 
+	static bool banshee_second = false;
+
 	while (true)
 	{
 
@@ -107,8 +109,9 @@ void opcontrol()
 		chassis.arcade(throttle, turn);
 
 		double pos = lift.get_position();
-		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
-		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN);
+		bool up_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
+		bool down_pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
+
 		//--- cascade lift
 		if (up_pressed && pos < LIFT_MAX)
 		{
@@ -125,11 +128,11 @@ void opcontrol()
 		}
 
 		// --- Intake ---
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1))
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
 		{
 			intake.move(127);
 		}
-		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2))
+		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN))
 		{
 			intake.move(-127);
 		}
@@ -139,11 +142,11 @@ void opcontrol()
 		}
 
 		// --- Outtake ---
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
 		{
 			outtake.move(-127);
 		}
-		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
+		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A))
 		{
 			outtake.move(127);
 		}
@@ -153,13 +156,17 @@ void opcontrol()
 		}
 
 		//--- Banshee ---
-		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
+		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
 		{
-			banshee.move_absolute(-BANSHEE_ANGLE, 350); // target position in degrees, max speed in rpm,
-		}
-		else if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) //
-		{
-			banshee.move_absolute(1 / 2 * BANSHEE_ANGLE, 350);
+			if (!banshee_second)
+			{
+				banshee.move_absolute(-BANSHEE_ANGLE, 350);
+			}
+			else
+			{
+				banshee.move_absolute(0.3 * BANSHEE_ANGLE, 300);
+			}
+			banshee_second = !banshee_second;
 		}
 
 		pros::delay(20); // Delay to prevent wasted resources
